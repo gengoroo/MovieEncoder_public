@@ -1,0 +1,54 @@
+function [layers, options] = config_Layer(imds, learn_rate, filtersize,nFilter,yn_plot,varargin)
+
+    for ii =1:nargin-5
+        if strcmp(varargin{ii},'stride')
+            stride = varargin{ii+1};
+        end
+    end
+
+    nBatch = 64;%def =64;
+    nEpoch = 20;%def=20
+    % Layer作成
+    %サイズ指定
+    im_test = imread(imds.Files{1});
+    [nPix1] = size(im_test,1);
+    [nPix2] = size(im_test,2);
+    nColor = size(im_test,3);
+    nCategory = numel(countcats(imds.Labels));
+    
+    %Layer作成
+    %https://www.mathworks.com/help/deeplearning/ref/nnet.cnn.layer.imageinputlayer.html#d124e99171
+    layers = [ ...
+    imageInputLayer([nPix1 nPix2 nColor])
+ 
+    convolution2dLayer(filtersize,nFilter,'Stride',stride);% filtersize = 5x5, numfilters = 64;
+    reluLayer
+    maxPooling2dLayer(2,'Stride',1);% poolsize = 2x2;
+    
+    % 2nd layer, 
+    %convolution2dLayer(4,16,'Stride',1)% ???Layer??????
+    %reluLayer
+    %maxPooling2dLayer(2,'Stride',1)
+    
+    fullyConnectedLayer(nCategory)
+    softmaxLayer
+    classificationLayer];
+
+    if yn_plot == 'y'
+        plot_option = "training-progress";
+    else
+        plot_option = "none";
+    end
+    
+    %オプション設定
+    %https://www.mathworks.com/help/deeplearning/ref/trainingoptions.html
+    options = trainingOptions("sgdm", ...
+    LearnRateSchedule="piecewise", ...
+    shuffle="once",...
+    InitialLearnRate=learn_rate,...% NaN回避
+    LearnRateDropFactor=0.2, ...
+    LearnRateDropPeriod=5, ...
+    MaxEpochs=nEpoch, ...
+    MiniBatchSize=nBatch, ...
+    Plots=plot_option);
+end

@@ -1,0 +1,9 @@
+function [Accuracy_each, N_each, Accuracy_total, N_total] = calc_score(imds,Response)
+    Labels = unique(imds.Labels);
+    N_total = nume
+    for id_label = 1:numel(Labels)
+        ListPick = find(imds.Labels == Labels(id_label));
+        N_each(id_label) = numel(ListPick);
+        Accuracy_each(id_label) = numel(find(imds.Labels(ListPick)==Response(ListPick)))/N_Each(id_label);
+    end
+end
