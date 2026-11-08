@@ -1,1 +1,1 @@
-Please refer to https://github.com/gengoroo/MotionEncoderSet for manuals and minimal code
+Please see MotionEncoderSet for documentation and minimal example code.
